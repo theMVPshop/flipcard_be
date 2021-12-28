@@ -1,7 +1,6 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
-import fetch from "node-fetch";
 
 //@description     Auth the user
 //@route           POST /FLIPCARD_BE/users/login
