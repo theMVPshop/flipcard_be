@@ -11,4 +11,4 @@ dotenv.config();
 
 // connectDB(); ** Will use for when I get DB credentials
 
-// app.use("/api/users", userRoutes); ** will use when finish userRoutes and have DB to connect with
+app.use("/FLIPCARD_BE/users", userRoutes);
