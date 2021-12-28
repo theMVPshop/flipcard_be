@@ -4,7 +4,7 @@ import generateToken from "../utils/generateToken.js";
 import fetch from "node-fetch";
 
 //@description     Auth the user
-//@route           POST /api/users/login
+//@route           POST /FLIPCARD_BE/users/login
 //@access          Public
 const authUser = asyncHandler(async (req, res) => {
 	const { email, password } = req.body;
@@ -27,7 +27,7 @@ const authUser = asyncHandler(async (req, res) => {
 });
 
 //@description     Register new user
-//@route           POST /api/users/
+//@route           POST /FLIPCARD_BE/users/
 //@access          Public
 const registerUser = asyncHandler(async (req, res) => {
 	const { name, email, password } = req.body;
@@ -59,7 +59,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 // @desc    GET user profile
-// @route   GET /api/users/profile
+// @route   GET /FLIPCARD_BE/users/profile
 // @access  Private
 const updateUserProfile = asyncHandler(async (req, res) => {
 	const user = await User.findById(req.user._id);
