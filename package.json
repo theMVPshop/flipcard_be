@@ -1,4 +1,8 @@
 {
+	"name": "backend",
+	"version": "1.0.0",
+	"main": "index.js",
+	"license": "MIT",
 	"dependencies": {
 		"bcrypt": "^5.0.1",
 		"body-parser": "^1.19.0",
@@ -14,5 +18,18 @@
 		"nodemailer": "^6.7.2",
 		"nodemon": "^2.0.15",
 		"path": "^0.12.7"
-	}
+	},
+	"scripts": {
+		"start": "node server/server.js"
+	},
+	"description": "",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/theMVPshop/flipcard_be.git"
+	},
+	"author": "",
+	"bugs": {
+		"url": "https://github.com/theMVPshop/flipcard_be/issues"
+	},
+	"homepage": "https://github.com/theMVPshop/flipcard_be#readme"
 }
