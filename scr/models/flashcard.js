@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = mongoose.Schema(
+const flashcardSchema = mongoose.Schema(
 	{
 		//category- should this be a radio button in dropdown?- how to work into schema?
 		category: {
