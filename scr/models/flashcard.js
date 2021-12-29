@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const flashcardSchema = mongoose.Schema(
 	{
-		//category- should this be a radio button in dropdown?- how to work into schema?
+		//category- should this be a radio button in dropdown?- how to work into schema?- this is the course- dental, medical, code
 		category: {
 			type: String,
 			required: true,
@@ -17,13 +17,19 @@ const flashcardSchema = mongoose.Schema(
 			type: String,
 			required: true,
 		},
-		front: {
+		//term & definition- front/back of flashcards
+		term: {
 			type: String,
 			required: true,
 		},
-		back: {
+		definition: {
 			type: String,
 			required: true,
+		},
+
+		imageUrl: {
+			type: URL,
+			required: false,
 		},
 	},
 	{
