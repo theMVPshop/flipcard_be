@@ -17,6 +17,11 @@ const flashcardSchema = mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		//description is option text filed in FE form- for the flashcard "set/collection"- just push for form edits and review, not pushed in individual cards
+		description: {
+			type: String,
+			required: false,
+		},
 		//term & definition- front/back of flashcards
 		term: {
 			type: String,
