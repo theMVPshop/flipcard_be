@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 
 const JWTSecret = process.env.JWT_SECRET;
 const bcryptSalt = process.env.BCRYPT_SALT;
-const clientURL = process.env.CLIENT_URL; // Need to create this vanity email account to send the reset link from and then put the credentials into .env file
+const clientURL = process.env.CLIENT_URL; // Need to set this as url lin .env file to route to the frontend- the password reset screen
 
 const requestPasswordReset = async (email) => {
 	const user = await User.findOne({ email });
