@@ -2,12 +2,13 @@ import mongoose from "mongoose";
 
 const flashcardSchema = mongoose.Schema(
 	{
-		//category- should this be a radio button in dropdown?- how to work into schema?- this is the course- dental, medical, code
+		//category- should this be a single enummerated value from dropdown- this is the course- dental, medical, code
 		category: {
 			type: String,
+			enum: ["Dental", "Medical", "Coding"], //need to check same syntax as FE dropdowns when they build
 			required: true,
 		},
-		//this is published or draft- default is false so default is that it is a draft
+		//this is published or draft- default is false so default is that it is a draft- need to check with FE for how putting into form- radio, toggle or reg button
 		visible: {
 			type: Boolean,
 			required: true,
