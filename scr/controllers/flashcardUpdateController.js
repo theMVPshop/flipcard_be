@@ -28,3 +28,7 @@ const updateFlashcardSet = asyncHandler(async (req, res) => {
 });
 
 export { updateFlashcardSet };
+
+// might need to add a subschema for the flashcard per set -- array of arrays
+// https://stackoverflow.com/questions/64452045/mongoose-updatemany-documents-containing-specific-array-element
+// https://stackoverflow.com/questions/66914574/mongoose-updatemany-with-aggregation-pipeline
