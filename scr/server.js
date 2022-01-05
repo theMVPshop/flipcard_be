@@ -7,6 +7,10 @@ import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 dotenv.config();
 connectDB();
 
+app.listen(8080, () => {
+	console.log("Application listening on port 8080!");
+});
+
 const app = express(); // main thing
 app.use(express.json()); // to accept json data
 app.use("/FLILPCARD_BE/users", userRoutes);
@@ -15,10 +19,6 @@ app.use("/FLILPCARD_BE/users", userRoutes);
 app.get("/", (req, res) => {
 	res.send({ message: "Hello WWW!" });
 	console.log("server is running");
-});
-
-app.listen(8080, () => {
-	console.log("Application listening on port 8080!");
 });
 
 // --------------------------for deployment------------------------------
