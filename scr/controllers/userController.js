@@ -28,9 +28,10 @@ const authUser = asyncHandler(async (req, res) => {
 //@description     Register new user
 //@route           POST /FLIPCARD_BE/users/
 //@access          Public
+// Unable to connect to Mongoose server, no .env file, and unable to authorize
 const registerUser = asyncHandler(async (req, res) => {
 	const { name, email, password } = req.body;
-
+ 
 	const userExists = await User.findOne({ email });
 
 	if (userExists) {

@@ -25,7 +25,8 @@
 		"type": "^2.5.0"
 	},
 	"scripts": {
-		"start": "node scr/server.js"
+		"start": "node scr/server.js",
+		"dev": "nodemon scr/server.js"
 	},
 	"description": "",
 	"repository": {
