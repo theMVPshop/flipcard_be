@@ -5,6 +5,8 @@ import generateToken from "../utils/generateToken.js";
 //@description     Auth the user
 //@route           POST /FLIPCARD_BE/users/login
 //@access          Public
+
+
 const authUser = asyncHandler(async (req, res) => {
 	const { email, password } = req.body;
 
@@ -45,12 +47,16 @@ const registerUser = asyncHandler(async (req, res) => {
 		password,
 	});
 
+	//encrypt user password
+	encryptedPassword = await bcrypt.hash(password, 10)
+
 	if (user) {
 		res.status(201).json({
 			_id: user._id,
 			name: user.name,
-			email: user.email,
+			email: user.email.toLowerCase(),
 			token: generateToken(user._id),
+			//generate web token comes from utils
 		});
 	} else {
 		res.status(400);

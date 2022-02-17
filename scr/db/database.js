@@ -18,7 +18,7 @@
 
 //Connect file to mysql db
 
-onst mysql = require('mysql')
+const mysql = require('mysql')
 require('dotenv').config();
 
 class Connection {

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 
-// dotenv.config();
+dotenv.config();
 // connectDB();
 
 
@@ -14,10 +14,10 @@ app.use(express.json()); // to accept json data
 app.use("/FLIPCARD_BE/users", userRoutes);
 
 //Test that server is running
-app.get("/", (req, res) => {
-	res.send({ message: "Hello WWW!" });
-	console.log("server is running");
-});
+// app.get("/", (req, res) => {
+// 	res.send({ message: "Hello WWW!" });
+// 	console.log("server is running");
+// });
 
 // --------------------------for deployment------------------------------
 
