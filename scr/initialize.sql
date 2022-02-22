@@ -1,7 +1,8 @@
 Create database if not exists flashcards_data;
-Use flashcards_data
-DROP TABLE IF EXISTS admin, users, flashcards
-CREATE TABLE admin
+
+Use flashcards_data;
+
+DROP TABLE IF EXISTS admin, users, flashcards;
 
 CREATE TABLE users {
   User_ID INT NOT NULL AUTO_INCREMENT
@@ -14,7 +15,7 @@ CREATE TABLE users {
   FOREIGN KEY (program)
   REFERENCES flashcards (program)
    ON DELETE CASCADE
-}
+};
 
 CREATE TABLE admin {
   Admin_ID INT NOT NULL AUTO_INCREMENT,
@@ -23,7 +24,7 @@ CREATE TABLE admin {
   first_name VARCHAR(25) NOT NULL,
   last_name VARCHAR(25) NOT NULL,
   PRIMARY KEY (Admin_ID)
-}
+};
 
 CREATE TABLE flashcards {
   Card_ID INT NOT NULL AUTO_INCREMENT,
@@ -34,4 +35,4 @@ CREATE TABLE flashcards {
   front_img LONGBLOB,
   back_img LONGBLOB
   PRIMARY KEY (Card_ID)
-}
+};
