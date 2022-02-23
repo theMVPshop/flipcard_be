@@ -1,7 +1,8 @@
-const {
-	resetPasswordRequestController,
-	resetPasswordController,
-} = require("../controllers/resetPasswordController.js");
+// const {
+// 	resetPasswordRequestController,
+// 	resetPasswordController,
+// } = require("../controllers/resetPasswordController.js");
+import { resetPasswordController, resetPasswordController} from '../controllers/restPasswordController'
 
 const router = require("express").Router();
 

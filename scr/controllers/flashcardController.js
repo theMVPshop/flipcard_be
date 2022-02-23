@@ -1,8 +1,16 @@
-const mysql = require('mysql')
-const pool = require('../db/database')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const {errorHandler} = require('../middleware/errorMiddleware')
+// const mysql = require('mysql')
+// const pool = require('../db/database')
+// const bcrypt = require('bcrypt')
+// const jwt = require('jsonwebtoken')
+// const {errorHandler} = require('../middleware/errorMiddleware')
+
+import mysql from 'mysql'
+import instance from '../db/database.js'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import {errorHandler} from '../middleware/errorMiddleware.js'
+
+
 
 const saltRounds = 10
 
