@@ -7,6 +7,8 @@ import generateToken from "../utils/generateToken.js";
 //@access          Public
 
 
+//Need to figure out how to change over User from Mongo to MYSQL
+
 const authUser = asyncHandler(async (req, res) => {
 	const { email, password } = req.body;
 
