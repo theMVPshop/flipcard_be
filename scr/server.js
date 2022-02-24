@@ -26,10 +26,10 @@ app.use(cors())
 app.use("/FLIPCARD_BE/users", userRoutes);
 
 // Test that server is running
-app.get("/", (req, res) => {
-	res.send({ message: "Hello WWW!" });
-	console.log("server is running");
-});
+// app.get("/", (req, res) => {
+// 	res.send({ message: "Hello WWW!" });
+// 	console.log("server is running");
+// });
 
 // --------------------------for deployment------------------------------
 
