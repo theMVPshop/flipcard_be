@@ -7,6 +7,7 @@ from '../controllers/userControllerSQL.js'
 
 const router = express.Router();
 
+router.get('/user', getAllUsers)
 router.route("/user/register").post(registerUser);
 router.post("/user/login", authUser);
 // router.route("/profile").post(protect, updateUserProfile);

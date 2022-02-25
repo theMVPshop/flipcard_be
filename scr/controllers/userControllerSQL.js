@@ -10,13 +10,16 @@ import mysql from 'mysql'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import {errorHandler} from '../middleware/errorMiddleware.js'
+// import instance from '../db/database.js'
+import connection from '../db/database.js'
+import  handleSQLError  from '../db/error.js'
 
 
 const saltRounds = 10
 
 const getAllUsers = (req, res) => {
-    pool.query("SELECT * FROM users", (err, rows) => {
-        if(err) return errorHandler(res,err)
+    connection.query("SELECT * FROM users", (err, rows) => {
+        if(err) return "hello"
         return res.json(rows);
     })
 }

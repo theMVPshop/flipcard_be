@@ -1,19 +1,19 @@
-import express from "express";
-// const express = require('express')
 import dotenv from "dotenv";
-// const dotenv = require('dotenv')
-import userRoutes from "./routes/userRoutes.js";
-// const userRoutes = require('./routes/userRoutes')
-import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
-// const {errorHandler, notFound} = require('./middleware/errorMiddleware')
-import cors from 'cors'
-// const cors = require('cors')
-import path from 'path'
-// const path = require('path')
-import bodyParser from 'body-parser'
-// const bodyParder = require('body-parser')
 dotenv.config();
+import express from "express";
+
+import userRoutes from "./routes/userRoutes.js";
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import cors from 'cors'
+import path from 'path'
+import bodyParser from 'body-parser'
+
 // connectDB();
+// const userRoutes = require('./routes/userRoutes')
+// const {errorHandler, notFound} = require('./middleware/errorMiddleware')
+// const cors = require('cors')
+// const path = require('path')
+// const bodyParder = require('body-parser')
 
 
 
@@ -23,13 +23,13 @@ app.use(bodyParser.json()); //bodyparder middleware
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cors())
 
-app.use("/FLIPCARD_BE/users", userRoutes);
+
+app.use("/user", userRoutes);
 
 // Test that server is running
-// app.get("/", (req, res) => {
-// 	res.send({ message: "Hello WWW!" });
-// 	console.log("server is running");
-// });
+app.get("/", (req, res) => {
+	res.send({ message: "Hello WWW!" });
+});
 
 // --------------------------for deployment------------------------------
 
@@ -42,7 +42,7 @@ const PORT = process.env.PORT || 8080;
 app.listen(
 	PORT,
 	console.log(
-		`Server running on port ${PORT}..`, 
+		`Server running on port ${PORT}.. ${process.env.PORT}`, 
 	)
 );
 
