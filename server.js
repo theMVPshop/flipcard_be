@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
   res.send({ message: "Hello WWW!" });
 });
 
-app.use("/", userRoutes);
+app.use("/user", userRoutes);
 
 // --------------------------for deployment------------------------------
 

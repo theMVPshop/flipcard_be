@@ -21,6 +21,6 @@ class Connection {
   }
 }
 
-const connection = new Connection();
+const pool = new Connection();
 
-export default connection;
+export default pool;

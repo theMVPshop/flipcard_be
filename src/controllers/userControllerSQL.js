@@ -11,13 +11,13 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { errorHandler } from "../middleware/errorMiddleware.js";
 // import instance from '../db/database.js'
-import connection from "../db/database.js";
+import pool from "../db/database.js";
 import handleSQLError from "../db/error.js";
 
 const saltRounds = 10;
 
 const getAllUsers = (req, res) => {
-  connection.query("SELECT * FROM users", (err, rows) => {
+  pool.query("SELECT * FROM users", (err, rows) => {
     if (err) return "hello";
     return res.json(rows);
   });
@@ -25,7 +25,7 @@ const getAllUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   let sql = "SELECT * FROM users WHERE User_ID = ?";
-  const replacements = [req.params.User_ID];
+  const replacements = [req.params.id];
   sql = mysql.format(sql, replacements);
 
   pool.query(sql, (err, rows) => {
@@ -36,11 +36,11 @@ const getUserById = (req, res) => {
 
 const registerUser = (req, res) => {
   //Insert into users email, password, first_name, last_name, program
-
   pool.query(
     `SELECT * FROM users WHERE LOWER(email) = LOWER(${pool.escape(
       req.body.email
-    )});`,
+    )}
+    );`,
     (err, result) => {
       if (result.length) {
         return res.status(409).send({
@@ -54,26 +54,28 @@ const registerUser = (req, res) => {
               msg: err,
             });
           } else {
+            let sql =
+              "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)";
+
+            sql = mysql.format(sql, [
+              pool.escape(req.body.email),
+              pool.escape(hash),
+              req.body.first_name,
+              req.body.last_name,
+              req.body.program,
+            ]);
             //has hashed pw => add to database
-            pool.query(
-              `INSERT INTO users (email, password, first_name, last_name, program) VALUES (
-                            ${pool.escape(req.body.email)},
-                            ${pool.escape(hash)},
-                            ${req.body.first_name}, 
-                            ${req.body.last_name}, 
-                            ${req.body.program})`,
-              (err, result) => {
-                if (err) {
-                  throw err;
-                  return res.status(400).send({
-                    msg: err,
-                  });
-                }
-                return res.status(201).send({
-                  msg: "Your email has been registered!",
+            pool.query(sql, (err, result) => {
+              if (err) {
+                throw err;
+                return res.status(400).send({
+                  msg: err,
                 });
               }
-            );
+              return res.status(201).send({
+                msg: "Your email has been registered!",
+              });
+            });
           }
         });
       }
