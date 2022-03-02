@@ -115,10 +115,9 @@ const authUser = (req, res) => {
         });
       }
       //check password
-      bcrypt.compare(
-        req.body.password,
-        result[0]["password"],
-        (bErr, bResult) => {
+      bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+        if (err) throw err;
+        bcrypt.compare(result[0]["password"], hash, (bErr, bResult) => {
           //wrong password
           if (bErr) {
             throw bErr;
@@ -128,12 +127,12 @@ const authUser = (req, res) => {
           }
           if (bResult) {
             const token = jwt.sign(
-              { id: result[0].id },
+              { id: result[0].User_ID },
               "the-super-strong-secret",
               { expiresIn: "1h" }
             );
             pool.query(
-              `UPDATE users SET last_login = now() WHERE id = '${result[0].id}'`
+              `UPDATE users SET last_login = now() WHERE id = '${result[0].User_ID}'`
             );
             return res.status(200).send({
               msg: "Logged in!",
@@ -144,8 +143,8 @@ const authUser = (req, res) => {
           return res.status(401).send({
             msg: "email or password is incorrect!",
           });
-        }
-      );
+        });
+      });
     }
   );
 };
