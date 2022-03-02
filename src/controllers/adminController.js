@@ -2,6 +2,8 @@ import mysql from 'mysql'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import {errorHandler} from '../middleware/errorMiddleware.js'
+import pool from '../db/database.js'
+import handleSQLError from '../db/error.js'
 
 const saltRounds = 10
 
@@ -14,7 +16,7 @@ const getAllAdmins = (req, res) => {
 
 const getAdminById = (req, res) => {
     let sql = 'SELECT * FROM admin WHERE Admin_ID = ?';
-    const replacements = [req.params.Admin_ID]
+    const replacements = [req.params.id]
     sql = mysql.format(sql, replacements)
 
     pool.query(sql, (err, rows) => {

@@ -1,96 +1,201 @@
-import asyncHandler from "express-async-handler";
-import User from "../models/userModel.js";
-import generateToken from "../utils/generateToken.js";
+// const mysql = require('mysql')
+// const pool = require('../db/database')
+// import {instance} from '../db/database.js'
+// import instance from '../db/database.js'
+// const bcrypt = require('bcrypt')
+// const jwt = require('jsonwebtoken')
+// const {errorHandler} = require('../middleware/errorMiddleware')
 
-//@description     Auth the user
-//@route           POST /FLIPCARD_BE/users/login
-//@access          Public
+import mysql from "mysql";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { errorHandler } from "../middleware/errorMiddleware.js";
+// import instance from '../db/database.js'
+import pool from "../db/database.js";
+import handleSQLError from "../db/error.js";
 
+const saltRounds = 10;
 
-//Need to figure out how to change over User from Mongo to MYSQL
+const getAllUsers = (req, res) => {
+  pool.query("SELECT * FROM users", (err, rows) => {
+    if (err) return "hello";
+    return res.json(rows);
+  });
+};
 
-const authUser = asyncHandler(async (req, res) => {
-	const { email, password } = req.body;
+const getUserById = (req, res) => {
+  let sql = "SELECT * FROM users WHERE User_ID = ?";
+  const replacements = [req.params.id];
+  sql = mysql.format(sql, replacements);
 
-	const user = await User.findOne({ email });
+  pool.query(sql, (err, rows) => {
+    if (err) return errorHandler(res, err);
+    return res.json(rows);
+  });
+};
 
-	if (user && (await user.matchPassword(password))) {
-		res.json({
-			_id: user._id,
-			name: user.name,
-			email: user.email,
-			token: generateToken(user._id),
-		});
-	} else {
-		res.status(401);
-		throw new Error("Invalid Email or Password");
-	}
+const registerUser = (req, res) => {
+  //Insert into users email, password, first_name, last_name, program
+  pool.query(
+    `SELECT * FROM users WHERE LOWER(email) = LOWER(${pool.escape(
+      req.body.email
+    )}
+    );`,
+    (err, result) => {
+      if (result.length) {
+        return res.status(409).send({
+          msg: "This email already exists!",
+        });
+      } else {
+        // email is available
+        bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+          if (err) {
+            return res.status(500).send({
+              msg: err,
+            });
+          } else {
+            let sql =
+              "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)";
 
-	console.log("SUCCESS!");
-});
+            sql = mysql.format(sql, [
+              pool.escape(req.body.email),
+              pool.escape(hash),
+              req.body.first_name,
+              req.body.last_name,
+              req.body.program,
+            ]);
+            //has hashed pw => add to database
+            pool.query(sql, (err, result) => {
+              if (err) {
+                throw err;
+                return res.status(400).send({
+                  msg: err,
+                });
+              }
+              return res.status(201).send({
+                msg: "Your email has been registered!",
+              });
+            });
+          }
+        });
+      }
+    }
+  );
+  // let sql = "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?, ?, ?, ?, ?)"
+  // //What goes into brackets
+  // const {email, password, first_name, last_name, program} = req.body
 
-//@description     Register new user
-//@route           POST /FLIPCARD_BE/users/
-//@access          Public
-// Unable to connect to Mongoose server, no .env file, and unable to authorize
-const registerUser = asyncHandler(async (req, res) => {
-	const { name, email, password } = req.body;
- 
-	const userExists = await User.findOne({ email });
+  // bcrypt.hash(password, saltRounds, function(err,hash) {
+  //     sql = mysql.format(sql, [email, hash, first_name, last_name, program])
 
-	if (userExists) {
-		res.status(404);
-		throw new Error("User already exists");
-	}
+  // pool.query(sql, (err, result) => {
+  //     if(err) {
+  //         if(err.code === 'ER_DUP_ENTRY') return res.status(409).send('Email is already registered!')
+  //         return errorHandler(res, err)
+  //     }
+  //     return res.send('Sign-up successful')
+  // })
+  // })
+};
 
-	const user = await User.create({
-		name,
-		email,
-		password,
-	});
+const authUser = (req, res) => {
+  pool.query(
+    `SELECT * FROM users WHERE email = ${pool.escape(req.body.email)}`,
+    (err, result) => {
+      //user does not exist
+      if (err) {
+        throw err;
+        return res.status(400).send({
+          msg: err,
+        });
+      }
+      if (!result.length) {
+        return res.status(401).send({
+          msg: "Email or password is incorrect!",
+        });
+      }
+      //check password
+      bcrypt.compare(
+        req.body.password,
+        result[0]["password"],
+        (bErr, bResult) => {
+          //wrong password
+          if (bErr) {
+            throw bErr;
+            return res.status(401).send({
+              msg: "Email or password is incorrect!",
+            });
+          }
+          if (bResult) {
+            const token = jwt.sign(
+              { id: result[0].id },
+              "the-super-strong-secret",
+              { expiresIn: "1h" }
+            );
+            pool.query(
+              `UPDATE users SET last_login = now() WHERE id = '${result[0].id}'`
+            );
+            return res.status(200).send({
+              msg: "Logged in!",
+              token,
+              user: result[0],
+            });
+          }
+          return res.status(401).send({
+            msg: "email or password is incorrect!",
+          });
+        }
+      );
+    }
+  );
+};
 
-	//encrypt user password
-	encryptedPassword = await bcrypt.hash(password, 10)
+export { registerUser, getAllUsers, getUserById, authUser };
 
-	if (user) {
-		res.status(201).json({
-			_id: user._id,
-			name: user.name,
-			email: user.email.toLowerCase(),
-			token: generateToken(user._id),
-			//generate web token comes from utils
-		});
-	} else {
-		res.status(400);
-		throw new Error("User not found");
-	}
-});
-
-// @desc    GET user profile
-// @route   GET /FLIPCARD_BE/users/profile
-// @access  Private
-const updateUserProfile = asyncHandler(async (req, res) => {
-	const user = await User.findById(req.user._id);
-
-	if (user) {
-		user.name = req.body.name || user.name;
-		user.email = req.body.email || user.email;
-		if (req.body.password) {
-			user.password = req.body.password;
-		}
-
-		const updatedUser = await user.save();
-
-		res.json({
-			_id: updatedUser._id,
-			name: updatedUser.name,
-			email: updatedUser.email,
-			token: generateToken(updatedUser._id),
-		});
-	} else {
-		res.status(404);
-		throw new Error("User Not Found");
-	}
-});
-
-export { authUser, updateUserProfile, registerUser };
+// router.post('/login', loginValidation, (req, res, next) => {
+//     db.query(
+//     `SELECT * FROM users WHERE email = ${db.escape(req.body.email)};`,
+//     (err, result) => {
+//     // user does not exists
+//     if (err) {
+//     throw err;
+//     return res.status(400).send({
+//     msg: err
+//     });
+//     }
+//     if (!result.length) {
+//     return res.status(401).send({
+//     msg: 'Email or password is incorrect!'
+//     });
+//     }
+//     // check password
+//     bcrypt.compare(
+//     req.body.password,
+//     result[0]['password'],
+//     (bErr, bResult) => {
+//     // wrong password
+//     if (bErr) {
+//     throw bErr;
+//     return res.status(401).send({
+//     msg: 'Email or password is incorrect!'
+//     });
+//     }
+//     if (bResult) {
+//     const token = jwt.sign({id:result[0].id},'the-super-strong-secrect',{ expiresIn: '1h' });
+//     db.query(
+//     `UPDATE users SET last_login = now() WHERE id = '${result[0].id}'`
+//     );
+//     return res.status(200).send({
+//     msg: 'Logged in!',
+//     token,
+//     user: result[0]
+//     });
+//     }
+//     return res.status(401).send({
+//     msg: 'Username or password is incorrect!'
+//     });
+//     }
+//     );
+//     }
+//     );
+//     });

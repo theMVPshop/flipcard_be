@@ -1,13 +1,16 @@
 import express from "express";
-import { Admin } from "mongodb";
 
-import { getAllAdmins, getAdminById, registerAdmin, authAdmin } from "../controllers/adminController";
-
+import {
+  getAllAdmins,
+  getAdminById,
+  registerAdmin
+} from "../controllers/adminController.js";
 
 const router = express.Router();
 
-router.route('/admin/:id').get(getAdminById)
-router.route("/admin/register").post(registerAdmin)
-router.route('/admin/login').post(authAdmin)
+router.get('/', getAllAdmins);
+router.get("/:id", getAdminById);
+router.post("/register", registerAdmin);
+// router.post("/login", authAdmin);
 
 export default router;
