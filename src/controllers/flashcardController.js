@@ -34,7 +34,7 @@ const getFlashcardByProgram = (req,res) => {
 
 const createFlashcard = (req, res) => {
     // Insert into flashcard program, chapter, front_text, back_text, front_img, back_img
-    let sql = "INSERT INTO flashcards (program, chapter, front_text, back_text, front_img, back_img VALUES (?, ?, ?, ?, ?, ?)"
+    let sql = "INSERT INTO flashcards (program, chapter, front_text, back_text, front_img, back_img) VALUES (?, ?, ?, ?, ?, ?)"
     // What goes into brackets
     const {program, chapter, front_text, back_text, front_img, back_img} = req.body
     sql = mysql.format(sql, [program, chapter, front_text, back_text, front_img, back_img])
