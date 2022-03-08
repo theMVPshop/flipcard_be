@@ -1,14 +1,9 @@
-// const mysql = require('mysql')
-// const pool = require('../db/database')
-// const bcrypt = require('bcrypt')
-// const jwt = require('jsonwebtoken')
-// const {errorHandler} = require('../middleware/errorMiddleware')
-
 import mysql from "mysql";
 import instance from "../db/database.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { errorHandler } from "../middleware/errorMiddleware.js";
+import pool from '../db/database.js'
 
 const saltRounds = 10;
 
@@ -53,8 +48,8 @@ const createFlashcard = (req, res) => {
   });
 };
 
-module.exports = {
+export {
   getAllFlashcards,
   getFlashcardByProgram,
-  createFlashcard,
+  createFlashcard
 };
