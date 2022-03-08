@@ -35,12 +35,10 @@ const getUserById = (req, res) => {
 };
 
 const registerUser = (req, res) => {
+  let sql = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)" 
+  sql = mysql.format(sql, req.body.email);
   //Insert into users email, password, first_name, last_name, program
-  pool.query(
-    `SELECT * FROM users WHERE LOWER(email) = LOWER(${pool.escape(
-      req.body.email
-    )}
-    );`,
+  pool.query(sql,
     (err, result) => {
       if (result.length) {
         return res.status(409).send({
@@ -58,8 +56,8 @@ const registerUser = (req, res) => {
               "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)";
 
             sql = mysql.format(sql, [
-              pool.escape(req.body.email),
-              pool.escape(hash),
+              req.body.email,
+              hash,
               req.body.first_name,
               req.body.last_name,
               req.body.program,
@@ -81,26 +79,12 @@ const registerUser = (req, res) => {
       }
     }
   );
-  // let sql = "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?, ?, ?, ?, ?)"
-  // //What goes into brackets
-  // const {email, password, first_name, last_name, program} = req.body
-
-  // bcrypt.hash(password, saltRounds, function(err,hash) {
-  //     sql = mysql.format(sql, [email, hash, first_name, last_name, program])
-
-  // pool.query(sql, (err, result) => {
-  //     if(err) {
-  //         if(err.code === 'ER_DUP_ENTRY') return res.status(409).send('Email is already registered!')
-  //         return errorHandler(res, err)
-  //     }
-  //     return res.send('Sign-up successful')
-  // })
-  // })
 };
 
 const authUser = (req, res) => {
-  pool.query(
-    `SELECT * FROM users WHERE email = ${pool.escape(req.body.email)}`,
+  let sql = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)"
+  sql = mysql.format(sql, req.body.email)
+  pool.query(sql,
     (err, result) => {
       //user does not exist
       if (err) {
@@ -111,13 +95,13 @@ const authUser = (req, res) => {
       }
       if (!result.length) {
         return res.status(401).send({
-          msg: "Email or password is incorrect!",
+          msg: "XEmail or password is incorrect!",
         });
       }
       //check password
       bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
         if (err) throw err;
-        bcrypt.compare(result[0]["password"], hash, (bErr, bResult) => {
+        bcrypt.compare(req.body.password, result[0]["password"], (bErr, bResult) => {
           //wrong password
           if (bErr) {
             throw bErr;
@@ -131,9 +115,9 @@ const authUser = (req, res) => {
               "the-super-strong-secret",
               { expiresIn: "1h" }
             );
-            pool.query(
-              `UPDATE users SET last_login = now() WHERE id = '${result[0].User_ID}'`
-            );
+            let sql = "UPDATE users SET last_login = now() WHERE id = ?"
+            sql = mysql.format(sql,result[0].User_ID)
+            pool.query(sql);
             return res.status(200).send({
               msg: "Logged in!",
               token,
@@ -150,51 +134,3 @@ const authUser = (req, res) => {
 };
 
 export { registerUser, getAllUsers, getUserById, authUser };
-
-// router.post('/login', loginValidation, (req, res, next) => {
-//     db.query(
-//     `SELECT * FROM users WHERE email = ${db.escape(req.body.email)};`,
-//     (err, result) => {
-//     // user does not exists
-//     if (err) {
-//     throw err;
-//     return res.status(400).send({
-//     msg: err
-//     });
-//     }
-//     if (!result.length) {
-//     return res.status(401).send({
-//     msg: 'Email or password is incorrect!'
-//     });
-//     }
-//     // check password
-//     bcrypt.compare(
-//     req.body.password,
-//     result[0]['password'],
-//     (bErr, bResult) => {
-//     // wrong password
-//     if (bErr) {
-//     throw bErr;
-//     return res.status(401).send({
-//     msg: 'Email or password is incorrect!'
-//     });
-//     }
-//     if (bResult) {
-//     const token = jwt.sign({id:result[0].id},'the-super-strong-secrect',{ expiresIn: '1h' });
-//     db.query(
-//     `UPDATE users SET last_login = now() WHERE id = '${result[0].id}'`
-//     );
-//     return res.status(200).send({
-//     msg: 'Logged in!',
-//     token,
-//     user: result[0]
-//     });
-//     }
-//     return res.status(401).send({
-//     msg: 'Username or password is incorrect!'
-//     });
-//     }
-//     );
-//     }
-//     );
-//     });
