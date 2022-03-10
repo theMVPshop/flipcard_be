@@ -2,7 +2,7 @@ import mysql from "mysql";
 import instance from "../db/database.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { errorHandler } from "../middleware/errorMiddleware.js";
+// import { errorHandler } from "../middleware/errorMiddleware.js";
 import handleSQLError from "../db/error.js";
 import pool from "../db/database.js";
 
@@ -10,7 +10,7 @@ const saltRounds = 10;
 
 const getAllFlashcards = (req, res) => {
   pool.query("SELECT * FROM flashcards", (err, rows) => {
-    if (err) return errorHandler(res, err);
+    if (err) return handleSQLError(res, err);
     return res.json(rows);
   });
 };
@@ -21,7 +21,7 @@ const getFlashcardByProgram = (req, res) => {
   sql = mysql.format(sql, replacements);
 
   pool.query(sql, (err, rows) => {
-    if (err) return errorHandler(res, err);
+    if (err) return handleSQLError(res, err);
     return res.json(rows);
   });
 };
@@ -32,7 +32,7 @@ const getFlashcardById = (req, res) => {
   sql = mysql.format(sql, replacements);
 
   pool.query(sql, (err, rows) => {
-    if (err) return errorHandler(res, err);
+    if (err) return handleSQLError(res, err);
     return res.json(rows);
   });
 };
@@ -55,7 +55,7 @@ const createFlashcard = (req, res) => {
   ]);
 
   pool.query(sql, (err, results) => {
-    if (err) return errorHandler(res, err);
+    if (err) return handleSQLError(res, err);
     return res.json({ newId: results.insertId });
     return res.send("Card succesfully added");
   });
