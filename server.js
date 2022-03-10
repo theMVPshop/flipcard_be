@@ -5,7 +5,7 @@ import express, { application } from "express";
 
 import userRoutes from "./src/routes/userRoutes.js";
 import flashcardRoutes from "./src/routes/flashcardRoutes.js";
-import { errorHandler, notFound } from "./src/middleware/errorMiddleware.js";
+// import { errorHandler, notFound } from "./src/middleware/errorMiddleware.js";
 import cors from "cors";
 // import path from "path";
 import bodyParser from "body-parser";
