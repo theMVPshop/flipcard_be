@@ -3,6 +3,7 @@ import instance from "../db/database.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { errorHandler } from "../middleware/errorMiddleware.js";
+import handleSQLError from "../db/error.js";
 import pool from "../db/database.js";
 
 const saltRounds = 10;
@@ -25,17 +26,16 @@ const getFlashcardByProgram = (req, res) => {
   });
 };
 
-
 const getFlashcardById = (req, res) => {
-    let sql = "SELECT * FROM flashcards WHERE Card_ID = ?";
-    const replacements = [req.params.Card_ID];
-    sql = mysql.format(sql, replacements);
-  
-    pool.query(sql, (err, rows) => {
-      if (err) return errorHandler(res, err);
-      return res.json(rows);
-    });
-  };
+  let sql = "SELECT * FROM flashcards WHERE Card_ID = ?";
+  const replacements = [req.params.Card_ID];
+  sql = mysql.format(sql, replacements);
+
+  pool.query(sql, (err, rows) => {
+    if (err) return errorHandler(res, err);
+    return res.json(rows);
+  });
+};
 
 const createFlashcard = (req, res) => {
   // Insert into flashcard program, chapter, front_text, back_text, front_img, back_img
@@ -61,12 +61,21 @@ const createFlashcard = (req, res) => {
   });
 };
 
-const updateFlashCard = (req, res) => {
-    //Update flashcard and set course, title, description, term, defintion, front or back image
-    let sql = "UPDATE flashcards SET course = ?, title = ?, description = ?, term = ?, definition = ?, front_img = ?, back_img = ?  WHERE Card_ID = ?  ";
-    // (course, title, description, term, definition, front_img, back_img) VALUES (?, ?, ?, ?, ?, ?, ?)
-    const { course, title, description, term, definition, front_img, back_img, Card_ID } =
-    req.body;
+const updateFlashcard = (req, res) => {
+  //Update flashcard and set course, title, description, term, defintion, front or back image
+  let sql =
+    "UPDATE flashcards SET course = ?, title = ?, description = ?, term = ?, definition = ?, front_img = ?, back_img = ?  WHERE Card_ID = ?  ";
+  // (course, title, description, term, definition, front_img, back_img) VALUES (?, ?, ?, ?, ?, ?, ?)
+  const {
+    course,
+    title,
+    description,
+    term,
+    definition,
+    front_img,
+    back_img,
+    Card_ID,
+  } = req.body;
   sql = mysql.format(sql, [
     course,
     title,
@@ -79,10 +88,27 @@ const updateFlashCard = (req, res) => {
   ]);
 
   pool.query(sql, (err, results) => {
-      if(err) throw err;
-      return res.json({Card_ID})
-      return res.send("Card successfully updated")
-  })
-}
+    if (err) throw err;
+    return res.send(`Card ${Card_ID} successfully updated`);
+  });
+};
 
-export { getAllFlashcards, getFlashcardByProgram, getFlashcardById, createFlashcard, updateFlashCard };
+const deleteFlashcardById = (req, res) => {
+  let sql = "DELETE FROM flashcards WHERE Card_ID = ?";
+  const { Card_ID } = req.body;
+  sql = mysql.format(sql, [Card_ID]);
+
+  pool.query(sql, (err, results) => {
+    if (err) return handleSQLError(results, err);
+    return res.json({ message: `Deleted flashcard ${Card_ID}` });
+  });
+};
+
+export {
+  getAllFlashcards,
+  getFlashcardByProgram,
+  getFlashcardById,
+  createFlashcard,
+  updateFlashcard,
+  deleteFlashcardById,
+};

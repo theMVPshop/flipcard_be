@@ -3,4 +3,4 @@ const handleSQLError = (res,err) => {
   return res.status(500).send('An unexpected error occurred');
 }
 
-export default {handleSQLError}
+export default handleSQLError
