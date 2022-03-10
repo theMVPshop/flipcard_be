@@ -4,7 +4,6 @@ import "dotenv/config";
 import express, { application } from "express";
 
 import userRoutes from "./src/routes/userRoutes.js";
-import adminRoutes from "./src/routes/adminRoutes.js";
 import flashcardRoutes from "./src/routes/flashcardRoutes.js";
 import { errorHandler, notFound } from "./src/middleware/errorMiddleware.js";
 import cors from "cors";
@@ -31,7 +30,6 @@ app.get("/", (req, res) => {
 
 app.use("/user", userRoutes);
 app.use("/card", flashcardRoutes);
-app.use("/admin", adminRoutes);
 
 // --------------------------for deployment------------------------------
 
