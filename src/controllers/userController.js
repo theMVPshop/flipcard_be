@@ -1,16 +1,6 @@
-// const mysql = require('mysql')
-// const pool = require('../db/database')
-// import {instance} from '../db/database.js'
-// import instance from '../db/database.js'
-// const bcrypt = require('bcrypt')
-// const jwt = require('jsonwebtoken')
-// const {errorHandler} = require('../middleware/errorMiddleware')
-
 import mysql from "mysql";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-// import { errorHandler } from "../middleware/errorMiddleware.js";
-// import instance from '../db/database.js'
 import pool from "../db/database.js";
 import handleSQLError from "../db/error.js";
 

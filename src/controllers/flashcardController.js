@@ -2,7 +2,6 @@ import mysql from "mysql";
 import instance from "../db/database.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-// import { errorHandler } from "../middleware/errorMiddleware.js";
 import handleSQLError from "../db/error.js";
 import pool from "../db/database.js";
 
