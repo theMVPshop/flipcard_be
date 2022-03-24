@@ -24,7 +24,7 @@ const getAllUsers = (req, res) => {
 };
 
 const getUserById = (req, res) => {
-  let sql = "SELECT * FROM users WHERE User_ID = ?";
+  let sql = "SELECT * FROM users WHERE user_id = ?";
   const replacements = [req.params.id];
   sql = mysql.format(sql, replacements);
 
@@ -35,49 +35,64 @@ const getUserById = (req, res) => {
 };
 
 const registerUser = (req, res) => {
-  let sql = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
-  sql = mysql.format(sql, req.body.email);
-  //Insert into users email, password, first_name, last_name, program
-  pool.query(sql, (err, result) => {
-    if (result.length) {
-      return res.status(409).send({
-        msg: "This email already exists!",
-      });
-    } else {
-      // email is available
-      bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
-        if (err) {
-          return res.status(500).send({
-            msg: err,
-          });
-        } else {
-          let sql =
-            "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)";
-
-          sql = mysql.format(sql, [
-            req.body.email,
-            hash,
-            req.body.first_name,
-            req.body.last_name,
-            req.body.program,
-          ]);
-          //has hashed pw => add to database
-          pool.query(sql, (err, result) => {
-            if (err) {
-              throw err;
-              return res.status(400).send({
-                msg: err,
-              });
-            }
-            return res.status(201).send({
-              msg: "Your email has been registered!",
-            });
-          });
-        }
-      });
-    }
+  if (!req.body.email || !req.body.password)
+    res.status(400).json({ msg: "email or password required" });
+  bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+    if (err) throw error;
+    let sql =
+      "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)";
+    const { email, first_name, last_name, program } = req.body;
+    sql = mysql.format(sql, [email, hash, first_name, last_name, program]);
+    pool.query(sql, (err, result) => {
+      if (err) throw err;
+      return res.status(201).send({ msg: "Your email has been registered!" });
+    });
   });
 };
+// const registerUser = (req, res) => {
+//   let sql = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
+//   sql = mysql.format(sql, req.body.email);
+//   //Insert into users email, password, first_name, last_name, program
+//   pool.query(sql, (err, result) => {
+//     if (result.length) {
+//       return res.status(409).send({
+//         msg: "This email already exists!",
+//       });
+//     } else {
+//       // email is available
+//       bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+//         if (err) {
+//           return res.status(500).send({
+//             msg: err,
+//           });
+//         } else {
+//           let sql =
+//             "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)";
+
+//           sql = mysql.format(sql, [
+//             req.body.email,
+//             hash,
+//             req.body.first_name,
+//             req.body.last_name,
+//             req.body.program,
+//           ]);
+//           //has hashed pw => add to database
+//           pool.query(sql, (err, result) => {
+//             if (err) {
+//               throw err;
+//               return res.status(400).send({
+//                 msg: err,
+//               });
+//             }
+//             return res.status(201).send({
+//               msg: "Your email has been registered!",
+//             });
+//           });
+//         }
+//       });
+//     }
+//   });
+// };
 
 const authUser = (req, res) => {
   let sql = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
@@ -111,12 +126,12 @@ const authUser = (req, res) => {
           }
           if (bResult) {
             const token = jwt.sign(
-              { id: result[0].User_ID },
+              { id: result[0].user_id },
               "the-super-strong-secret",
               { expiresIn: "1h" }
             );
             let sql = "UPDATE users SET last_login = now() WHERE id = ?";
-            sql = mysql.format(sql, result[0].User_ID);
+            sql = mysql.format(sql, result[0].user_id);
             pool.query(sql);
             return res.status(200).send({
               msg: "Logged in!",
