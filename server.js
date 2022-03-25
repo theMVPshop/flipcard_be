@@ -5,6 +5,7 @@ import userRoutes from "./src/routes/userRoutes.js";
 import flashcardRoutes from "./src/routes/flashcardRoutes.js";
 import cors from "cors";
 import bodyParser from "body-parser";
+import globalErrorHandler from './src/controllers/errorController.js'
 
 const app = express(); // main thing
 app.use(express.json()); // to accept json data
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 
 app.use("/user", userRoutes);
 app.use("/card", flashcardRoutes);
+app.use(globalErrorHandler);
 
 // --------------------------for deployment------------------------------
 
