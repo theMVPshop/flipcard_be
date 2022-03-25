@@ -5,7 +5,7 @@ import userRoutes from "./src/routes/userRoutes.js";
 import flashcardRoutes from "./src/routes/flashcardRoutes.js";
 import cors from "cors";
 import bodyParser from "body-parser";
-
+import globalErrorHandler from './src/controllers/errorController.js'
 
 const app = express(); // main thing
 app.use(express.json()); // to accept json data
@@ -20,14 +20,10 @@ app.get("/", (req, res) => {
 
 app.use("/user", userRoutes);
 app.use("/card", flashcardRoutes);
+app.use(globalErrorHandler);
 
 // --------------------------for deployment------------------------------
 
-
 const PORT = process.env.PORT || 8080;
 
-app.listen(
-  PORT,
-  console.log(`Server running on port ${PORT}.. ${process.env.PORT}`)
-);
-
+app.listen(PORT, console.log(`Server running on port ${PORT}.. `));

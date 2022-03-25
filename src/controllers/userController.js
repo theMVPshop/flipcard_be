@@ -3,10 +3,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import pool from "../db/database.js"
 import handleSQLError from "../db/error.js"
-import { promisify } from "util"
-
-const query = promisify(pool.query).bind(pool)
-const hash = promisify(bcrypt.hash).bind(bcrypt)
+import { AppError } from "../utils/appError.js"
 
 const saltRounds = 10
 
@@ -28,7 +25,7 @@ const getUserById = (req, res) => {
   })
 }
 
-const registerUser = async (req, res, next) => {
+const registerUser = async (req, res) => {
   if (!req.body.email || !req.body.password)
     res.status(400).json({ msg: "email or password required" })
 
@@ -38,55 +35,32 @@ const registerUser = async (req, res, next) => {
 
   sql = mysql.format(sql, [email, hash, first_name, last_name, program])
 
-  await pool.query(sql)
-  await res.status(201).send({ msg: "Your email has been registered!" })
+  pool.query(sql, (err) => {
+    if (err) return res.json({ msg: err })
+    res.status(201).send({ msg: "Your email has been registered!" })
+  })
 }
 
-const authUser = (req, res) => {
+const authUser = async (req, res, next) => {
   let sql = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)"
   sql = mysql.format(sql, req.body.email)
-  pool.query(sql, (err, result) => {
-    //user does not exist
-    if (err) {
-      throw err
-      return res.status(400).send({
-        msg: err,
+
+  pool.query(sql, async (err, results) => {
+    if (!req.body.email || !req.body.password) return next(new AppError(400, "You have entered the wrong Email or Password"))
+    if (err && err.sqlMessage) return next(new AppError(400, err.sqlMessage))
+    if (!results.length)
+      return next(new AppError(400), "You have entered the wrong Email or Password")
+    if (await bcrypt.compare(req.body.password, results[0].password)) {
+      console.log(await bcrypt.compare(req.body.password, results[0].password))
+      let token = jwt.sign({ id: results[0].user_id }, process.env.JWT_SECRET, {
+        expiresIn: "3h",
       })
-    }
-    if (!result.length) {
-      return res.status(401).send({
-        msg: "XEmail or password is incorrect!",
+      return res.status(200).json({
+        status: "success",
+        message: "You are logged in",
+        token: token,
       })
-    }
-    //check password
-    bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
-      if (err) throw err
-      bcrypt.compare(req.body.password, result[0]["password"], (bErr, bResult) => {
-        //wrong password
-        if (bErr) {
-          throw bErr
-          return res.status(401).send({
-            msg: "Email or password is incorrect!",
-          })
-        }
-        if (bResult) {
-          const token = jwt.sign({ id: result[0].user_id }, "the-super-strong-secret", {
-            expiresIn: "1h",
-          })
-          let sql = "UPDATE users SET last_login = now() WHERE id = ?"
-          sql = mysql.format(sql, result[0].user_id)
-          pool.query(sql)
-          return res.status(200).send({
-            msg: "Logged in!",
-            token,
-            user: result[0],
-          })
-        }
-        return res.status(401).send({
-          msg: "email or password is incorrect!",
-        })
-      })
-    })
+    } else return next(new AppError(400, "You have entered the wrong Email or Password"))
   })
 }
 
