@@ -1,8 +1,13 @@
-import { resetPasswordController, resetPasswordController} from '../controllers/resetPasswordController'
+import {
+  resetPasswordController,
+  resetPasswordController,
+} from "../controllers/resetPasswordController"
 
-const router = require("express").Router();
+import router from "express"
 
-router.post("/auth/requestResetPassword", resetPasswordRequestController);
-router.post("/auth/resetPassword", resetPasswordController);
+router.Router()
 
-module.exports = router;
+router.post("/auth/requestResetPassword", resetPasswordRequestController)
+router.post("/auth/resetPassword", resetPasswordController)
+
+module.exports = router
