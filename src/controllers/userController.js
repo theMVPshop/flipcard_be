@@ -63,11 +63,10 @@ const registerUser = async (req, res, next) =>
 //check password and login
 const authUser = async (req, res, next) => {
   const getUser = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)"
-  let user, hash, password, authenticated, token
+  let user, storedHash, authenticated, token
   user = await poolQuery(mysql.format(getUser, req.body.email))
-  // hash = await bcrypt.hash(req.body.password, saltRounds)
-  password = user[0].password
-  authenticated = await bcrypt.compare(req.body.password, password)
+  storedHash = user[0].password
+  authenticated = await bcrypt.compare(req.body.password, storedHash)
   token =
     authenticated &&
     jwt.sign({ id: user[0].user_id }, "the-super-strong-secret", { expiresIn: "1h" })
