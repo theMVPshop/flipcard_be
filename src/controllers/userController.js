@@ -65,6 +65,7 @@ const authUser = async (req, res, next) => {
   const getUser = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)"
   let user, storedHash, authenticated, token
   user = await poolQuery(mysql.format(getUser, req.body.email))
+  !user.length && res.status(400).json({ msg: "Invalid email or password" })
   storedHash = user[0].password
   authenticated = await bcrypt.compare(req.body.password, storedHash)
   token =
@@ -73,7 +74,7 @@ const authUser = async (req, res, next) => {
 
   authenticated
     ? res.status(200).json({ msg: "Logged in!", token, user: user[0] })
-    : res.status(403).json({ msg: "Failed to login (check your email or password)" })
+    : res.status(403).json({ msg: "Invalid email or password)" })
 }
 
 export { registerUser, getAllUsers, getUserById, authUser }
