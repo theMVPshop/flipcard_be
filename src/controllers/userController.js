@@ -2,7 +2,7 @@ import mysql from "mysql"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import pool from "../db/database.js"
-import { AppError } from "../utils/appError.js"
+import AppError from "../utils/AppError.js"
 import { promisify } from "util"
 
 //turns "pool.query()" into a promise so that we can use async/await instead of callbacks
@@ -27,7 +27,7 @@ const saltRounds = 10
 //signup
 const registerUser = async (req, res, next) =>
   !req.body.email || !req.body.password
-    ? next(new AppError("Please provide an email and password", 400))
+    ? res.status(400).json({ msg: "Please enter an email and password" })
     : (await poolQuery(
         mysql.format(
           "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)",
