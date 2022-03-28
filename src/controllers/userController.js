@@ -5,9 +5,8 @@ import pool from "../db/database.js"
 import { AppError } from "../utils/appError.js"
 import { promisify } from "util"
 
+//turns "pool.query()" into a promise so that we can use async/await instead of callbacks
 const poolQuery = promisify(pool.query).bind(pool)
-
-const saltRounds = 10
 
 //get all users
 const getAllUsers = async (req, res, next) => {
@@ -22,29 +21,52 @@ const getUserById = async (req, res, next) => {
   return res.json(user)
 }
 
+//number of salt rounds for bcrypt hashing in auth functions below
+const saltRounds = 10
+
 //signup
-const registerUser = async (req, res, next) => {
-  if (!req.body.email || !req.body.password)
-    return next(new AppError("Please provide an email and password", 400))
+const registerUser = async (req, res, next) =>
+  !req.body.email || !req.body.password
+    ? next(new AppError("Please provide an email and password", 400))
+    : (await poolQuery(
+        mysql.format(
+          "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)",
+          [
+            req.body.email,
+            await bcrypt.hash(req.body.password, saltRounds),
+            req.body.first_name,
+            req.body.last_name,
+            req.body.program,
+          ]
+        )
+      ))
+    ? res.status(201).json({ msg: "Your email has been registered!" })
+    : next(new AppError("Something went wrong", 500))
 
-  const { email, password, first_name, last_name, program } = req.body
-  const hash = await bcrypt.hash(password, saltRounds)
-  let createUser =
-    "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)"
+// const registerUser = async (req, res, next) => {
+//   if (!req.body.email || !req.body.password)
+//     return next(new AppError("Please provide an email and password", 400))
 
-  createUser = await poolQuery(
-    mysql.format(createUser, [email, hash, first_name, last_name, program])
-  )
-  res.status(201).json({ msg: "Your email has been registered!" })
-}
+//   const { email, password, first_name, last_name, program } = req.body
+//   const hash = await bcrypt.hash(password, saltRounds)
+
+//   let createUser =
+//     "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)"
+
+//   createUser = await poolQuery(
+//     mysql.format(createUser, [email, hash, first_name, last_name, program])
+//   )
+
+//   return res.status(201).json({ msg: "Your email has been registered!" })
+// }
 
 //check password and login
 const authUser = async (req, res, next) => {
-  let user, password, hash, authenticated, token
   const getUser = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)"
+  let user, hash, password, authenticated, token
   user = await poolQuery(mysql.format(getUser, req.body.email))
+  // hash = await bcrypt.hash(req.body.password, saltRounds)
   password = user[0].password
-  hash = await bcrypt.hash(req.body.password, saltRounds)
   authenticated = await bcrypt.compare(req.body.password, password)
   token =
     authenticated &&
