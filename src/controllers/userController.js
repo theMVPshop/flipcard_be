@@ -27,9 +27,7 @@ const saltRounds = 10
 const registerUser = async (req, res, next) =>
   !req.body.email || !req.body.password //check for email and password
     ? res.status(400).json({ msg: "Please enter an email and password" }) //if not present, send error
-    : //if email and password are present, create connection to the database
-    (await poolQuery(
-        //format query to insert user into database
+    : (await poolQuery(
         mysql.format(
           "INSERT INTO users (email, password, first_name, last_name, program) VALUES (?,?,?,?,?)", //insert user into database
           [
@@ -38,11 +36,9 @@ const registerUser = async (req, res, next) =>
             req.body.first_name,
             req.body.last_name,
             req.body.program,
-          ] //the values which replace the ?s in the query
+          ] //values to insert (replace ?s with values)
         )
-      ))
-    ? res.status(201).json({ msg: "Your email has been registered!" }) //if successful, send success message
-    : res.status(400).json({ msg: "Something went wrong" }) //if not, send error
+      )) && res.status(201).json({ msg: "Your email has been registered!" }) //if successful, send success message
 
 // alternate registerUser function
 // const registerUser = async (req, res, next) => {

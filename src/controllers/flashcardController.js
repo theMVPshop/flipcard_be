@@ -25,6 +25,7 @@ const getFlashcardById = async (req, res) =>
     await poolQuery(mysql.format("SELECT * FROM flashcards WHERE card_id = ?", req.params.card_id))
   )
 
+//create flashcard
 const createFlashcard = async (req, res, next) =>
   //create flashcard and set course, title, description, term, definition, front or back image
   (await poolQuery(
@@ -43,31 +44,29 @@ const createFlashcard = async (req, res, next) =>
     )
   )) && res.json({ msg: "Flashcard successfully added" }) //if successful, send message
 
-const updateFlashcard = (req, res) => {
-  //Update flashcard and set course, title, description, term, defintion, front or back image
-  let sql =
-    "UPDATE flashcards SET course = ?, title = ?, description = ?, term = ?, definition = ?, front_img = ?, back_img = ?  WHERE card_id = ?"
-  // (course, title, description, term, definition, front_img, back_img) VALUES (?, ?, ?, ?, ?, ?, ?)
-  const { course, title, description, term, definition, front_img, back_img, card_id } = req.body
-  const replacements = [course, title, description, term, definition, front_img, back_img, card_id]
-  sql = mysql.format(sql, replacements)
+//update flashcard
+const updateFlashcard = async (req, res) =>
+  (await poolQuery(
+    mysql.format(
+      "UPDATE flashcards SET course = ?, title = ?, description = ?, term = ?, definition = ?, front_img = ?, back_img = ?  WHERE card_id = ?", //updates flashcard in database
+      [
+        //values to replace ?'s above
+        req.body.course,
+        req.body.title,
+        req.body.description,
+        req.body.term,
+        req.body.definition,
+        req.body.front_img,
+        req.body.back_img,
+        req.body.card_id,
+      ]
+    )
+  )) && res.json({ msg: "Flashcard successfully updated" }) //if successful, send message
 
-  pool.query(sql, (err, results) => {
-    if (err) throw err
-    return res.send(`Card ${card_id} successfully updated`)
-  })
-}
-
-const deleteFlashcardById = (req, res) => {
-  let sql = "DELETE FROM flashcards WHERE card_id = ?"
-  const { card_id } = req.body
-  sql = mysql.format(sql, [card_id])
-
-  pool.query(sql, (err, results) => {
-    if (err) return handleSQLError(results, err)
-    return res.json({ message: `Deleted flashcard ${card_id}` })
-  })
-}
+//delete flashcard
+const deleteFlashcardById = async (req, res) =>
+  (await poolQuery(mysql.format("DELETE FROM flashcards WHERE card_id = ?", req.params.card_id))) && //deletes flashcard from database
+  res.json({ msg: "Flashcard successfully deleted" }) //if successful, send message
 
 export {
   getAllFlashcards,
