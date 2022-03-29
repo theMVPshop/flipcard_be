@@ -1,11 +1,11 @@
 import mysql from "mysql"
 import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
+import generateToken from "../utils/generateToken.js"
 import pool from "../db/database.js"
 import { promisify } from "util"
 
-//turns "pool.query()" into a promise so that we can use async/await instead of callbacks
-const poolQuery = promisify(pool.query).bind(pool)
+const poolQuery = promisify(pool.query).bind(pool) //turns "pool.query()" into a promise so that we can use async/await instead of callbacks
+//errors caught by errorHandler from ../utils
 
 //get all users
 const getAllUsers = async (req, res, next) => {
@@ -62,13 +62,11 @@ const registerUser = async (req, res, next) =>
 const authUser = async (req, res, next) => {
   const getUser = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)" //LOWER() is used to make email case insensitive
   let user, storedHash, authenticated, token //storedHash is the hashed password from the database
-  user = await poolQuery(mysql.format(getUser, req.body.email)) //get user from database
-  !user.length && res.status(400).json({ msg: "Invalid email or password" }) //send error if user doesn't exist
-  storedHash = user[0].password //get hashed password from database
+  user = await poolQuery(mysql.format(getUser, req.body.email)).then((user) => (user = user[0])) //get user from database
+  !user && res.status(400).json({ msg: "Invalid email or password" }) //send error if user doesn't exist
+  storedHash = user.password //get hashed password from database
   authenticated = await bcrypt.compare(req.body.password, storedHash) //compare hashed password from database with hashed password from user
-  token =
-    authenticated && //if authenticated/passwords match
-    jwt.sign({ id: user[0].user_id }, "the-super-strong-secret", { expiresIn: "1h" }) //generate token
+  token = authenticated && generateToken(user.user_id) //if authenticated/passwords match, then generate token
 
   authenticated //if authenticated
     ? res.status(200).json({ msg: "Logged in!", token, user: user[0] }) //send token and user

@@ -3,6 +3,7 @@ import pool from "../db/database.js"
 import { promisify } from "util"
 
 const poolQuery = promisify(pool.query).bind(pool) //turns pool.query into a promise so we can use async/await instead of callbacks
+//errors caught by errorHandler from ../utils
 
 //get all flashcards
 const getAllFlashcards = async (req, res) => res.json(await poolQuery("SELECT * FROM flashcards"))
@@ -59,8 +60,8 @@ const updateFlashcardById = async (req, res) =>
 
 //delete flashcard
 const deleteFlashcardById = async (req, res) =>
-  (await poolQuery(mysql.format("DELETE FROM flashcards WHERE card_id = ?", req.params.card_id))) && //deletes flashcard from database
-  res.json({ msg: `Flashcard ${req.params.card_id} successfully deleted` }) //if successful, send message
+  (await poolQuery(mysql.format("DELETE FROM flashcards WHERE card_id = ?", req.params.card_id))) && //deletes flashcard from database and if successful...
+  res.json({ msg: `Flashcard id#${req.params.card_id} successfully deleted` }) //...sends message
 
 export {
   getAllFlashcards,

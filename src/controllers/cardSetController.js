@@ -3,6 +3,7 @@ import pool from "../db/database.js"
 import { promisify } from "util"
 
 const poolQuery = promisify(pool.query).bind(pool) //turns pool.query into a promise so we can use async/await instead of callbacks
+//errors caught by errorHandler from ../utils
 
 //get all cardSets
 const getAllCardSets = async (req, res) => res.json(await poolQuery("SELECT * FROM card_sets"))
@@ -31,7 +32,7 @@ const createCardSet = async (req, res, next) =>
         req.body.course,
       ]
     )
-  )) && res.json({ msg: `card_set '${req.body.set_name}' successfully added` }) //if successful, send message
+  )) && res.json({ msg: `Flashcard set '${req.body.set_name}' successfully created.` }) //if successful, send message
 
 //update cardSet
 const updateCardSetById = async (req, res) =>
@@ -45,12 +46,12 @@ const updateCardSetById = async (req, res) =>
         req.params.set_id,
       ]
     )
-  )) && res.json({ msg: `cardSet${req.params.set_id} successfully updated` }) //if successful, send message
+  )) && res.json({ msg: `cardSet id#${req.params.set_id} successfully updated` }) //if successful, send message
 
 //delete cardSet
 const deleteCardSetById = async (req, res) =>
   (await poolQuery(mysql.format("DELETE FROM card_sets WHERE set_id = ?", req.params.set_id))) && //deletes cardSet from database
-  res.json({ msg: `cardSet ${req.params.set_id} successfully deleted` }) //if successful, send message
+  res.json({ msg: `cardSet id#${req.params.set_id} successfully deleted` }) //if successful, send message
 
 export {
   getAllCardSets,

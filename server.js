@@ -1,25 +1,23 @@
 import "dotenv/config"
-import express, { application } from "express"
+import express, { json } from "express"
+import cors from "cors"
 
 import userRoutes from "./src/routes/userRoutes.js"
 import flashcardRoutes from "./src/routes/flashcardRoutes.js"
 import cardSetRoutes from "./src/routes/cardSetRoutes.js"
-import cors from "cors"
-import bodyParser from "body-parser"
 import globalErrorHandler from "./src/controllers/errorController.js"
 
-const app = express() // main thing
-app.use(express.json()) // to accept json data
-app.use(bodyParser.json()) //bodyparder middleware
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(cors())
+const app = express() // create an instance of express
+app.use(json()) // to accept json data
+app.use(cors()) // to accept requests from other domains
 
 // Test that server is running
-app.get("/", (req, res) => res.send({ message: "Hello WWW!" }))
+app.get("/", (req, res) => res.send({ message: "Flipcardz express.js DB" }))
 
 app.use("/user", userRoutes)
 app.use("/card", flashcardRoutes)
 app.use("/cardset", cardSetRoutes)
+
 app.use(globalErrorHandler)
 
 // --------------------------for deployment------------------------------
