@@ -14,9 +14,9 @@ const saltRounds = 10
 const getAllFlashcards = async (req, res) => res.json(await poolQuery("SELECT * FROM flashcards"))
 
 //get all flashcards by course
-const getFlashcardByProgram = async (req, res) =>
+const getFlashcardsByCourse = async (req, res) =>
   res.json(
-    await poolQuery(mysql.format("SELECT * FROM flashcards WHERE program = ?", req.params.program))
+    await poolQuery(mysql.format("SELECT * FROM flashcards WHERE course = ?", req.params.course))
   )
 
 //get flashcard by id
@@ -61,16 +61,16 @@ const updateFlashcard = async (req, res) =>
         req.body.card_id,
       ]
     )
-  )) && res.json({ msg: "Flashcard successfully updated" }) //if successful, send message
+  )) && res.json({ msg: `Flashcard${req.body.card_id} successfully updated` }) //if successful, send message
 
 //delete flashcard
 const deleteFlashcardById = async (req, res) =>
   (await poolQuery(mysql.format("DELETE FROM flashcards WHERE card_id = ?", req.params.card_id))) && //deletes flashcard from database
-  res.json({ msg: "Flashcard successfully deleted" }) //if successful, send message
+  res.json({ msg: `Flashcard ${req.params.card_id} successfully deleted` }) //if successful, send message
 
 export {
   getAllFlashcards,
-  getFlashcardByProgram,
+  getFlashcardsByCourse,
   getFlashcardById,
   createFlashcard,
   updateFlashcard,
