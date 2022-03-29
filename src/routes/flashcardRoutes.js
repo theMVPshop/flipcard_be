@@ -1,19 +1,21 @@
-import express from "express";
+import express from "express"
 import {
   getAllFlashcards,
   getFlashcardByProgram,
   getFlashcardById,
   createFlashcard,
   updateFlashcard,
-  deleteFlashcardById
-} from "../controllers/flashcardController.js";
-const router = express.Router();
+  deleteFlashcardById,
+} from "../controllers/flashcardController.js"
+import handleErrors from "../utils/handleErrors.js"
 
-router.get("/", getAllFlashcards);
-router.get("/program/:program", getFlashcardByProgram);
-router.get("/:Card_ID", getFlashcardById)
-router.post("/", createFlashcard);
-router.put('/', updateFlashcard)
-router.delete('/', deleteFlashcardById)
+const router = express.Router()
 
-export default router;
+router.get("/", handleErrors(getAllFlashcards))
+router.get("/program/:program", handleErrors(getFlashcardByProgram))
+router.get("/:Card_ID", handleErrors(getFlashcardById))
+router.post("/", handleErrors(createFlashcard))
+router.put("/", handleErrors(updateFlashcard))
+router.delete("/", handleErrors(deleteFlashcardById))
+
+export default router
