@@ -69,7 +69,7 @@ const authUser = async (req, res, next) => {
   token = authenticated && generateToken(user.user_id) //if authenticated/passwords match, then generate token
 
   authenticated //if authenticated
-    ? res.status(200).json({ msg: "Logged in!", token, user: user[0] }) //send token and user
+    ? res.status(200).json({ msg: "Logged in!", token, user }) //send token and user
     : res.status(403).json({ msg: "Invalid email or password)" }) //if not authenticated
 }
 
