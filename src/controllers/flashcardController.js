@@ -25,9 +25,10 @@ const createFlashcard = async (req, res, next) =>
   //create flashcard and set course, title, description, term, definition, front or back image
   (await poolQuery(
     mysql.format(
-      "INSERT INTO flashcards (course, title, description, term, definition, front_img, back_img) VALUES (?, ?, ?, ?, ?, ?, ?)", //adds flashcard to database
+      "INSERT INTO flashcards (set_id, course, title, description, term, definition, front_img, back_img) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", //adds flashcard to database
       [
         //values to replace ?'s above
+        req.body.set_id,
         req.body.course,
         req.body.title,
         req.body.description,
