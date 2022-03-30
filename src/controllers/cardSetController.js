@@ -27,7 +27,7 @@ const createCardSet = async (req, res, next) => {
 
   const msg = `Flashcard set '${req.body.set_name}', with id# '${cardSet.insertId}' successfully created.`
 
-  res.json({ msg })
+  res.json({ msg, set_id: cardSet.insertId })
 }
 
 //update cardSet
