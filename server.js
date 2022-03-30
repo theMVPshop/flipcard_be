@@ -1,11 +1,11 @@
 import "dotenv/config"
 import express, { json } from "express"
 import cors from "cors"
+import globalErrorHandler from "./src/controllers/errorController.js"
 
 import userRoutes from "./src/routes/userRoutes.js"
 import flashcardRoutes from "./src/routes/flashcardRoutes.js"
 import cardSetRoutes from "./src/routes/cardSetRoutes.js"
-import globalErrorHandler from "./src/controllers/errorController.js"
 
 const app = express() // create an instance of express
 app.use(json()) // to accept json data

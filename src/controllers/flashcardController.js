@@ -20,6 +20,12 @@ const getFlashcardById = async (req, res) =>
     await poolQuery(mysql.format("SELECT * FROM flashcards WHERE card_id = ?", req.params.card_id))
   )
 
+//get flashcards by set
+const getFlashcardsByCardSet = async (req, res) =>
+  res.json(
+    await poolQuery(mysql.format("SELECT * FROM flashcards WHERE set_id = ?", req.params.set_id))
+  )
+
 //create flashcard
 const createFlashcard = async (req, res, next) =>
   //create flashcard and set course, title, description, term, definition, front or back image
@@ -68,6 +74,7 @@ export {
   getAllFlashcards,
   getFlashcardsByCourse,
   getFlashcardById,
+  getFlashcardsByCardSet,
   createFlashcard,
   updateFlashcardById,
   deleteFlashcardById,
