@@ -20,6 +20,33 @@ const getCardSetById = async (req, res) =>
     await poolQuery(mysql.format("SELECT * FROM card_sets WHERE set_id = ?", req.params.set_id))
   )
 
+// GET all card_sets and their flashcards
+const getSetsWithFlashcards = async (req, res) => {
+  let sql = `SELECT * FROM card_sets`
+  let sql2 = `SELECT * FROM flashcards`
+  const results = await poolQuery(sql)
+  const flashcards = await poolQuery(sql2)
+  results.forEach((set) => {
+    let cardArr = []
+    flashcards.forEach((card) => {
+      if (card.set_id == set.set_id) {
+        cardArr.push({
+          card_id: card.card_id,
+          term: card.term,
+          definition: card.definition,
+          front_img: card.front_img,
+          back_img: card.back_img
+        })
+      }
+    })
+    set.amount = cardArr.length
+    set.cards = cardArr
+  })
+  res.json(results)
+}
+
+
+
 //create cardSet
 const createCardSet = async (req, res, next) => {
   const sql = "INSERT INTO card_sets (set_name, course) VALUES (?, ?)"
@@ -56,4 +83,5 @@ export {
   createCardSet,
   updateCardSetById,
   deleteCardSetById,
+  getSetsWithFlashcards
 }
