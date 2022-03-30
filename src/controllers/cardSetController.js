@@ -22,14 +22,13 @@ const getCardSetById = async (req, res) =>
 
 //create cardSet
 const createCardSet = async (req, res, next) => {
-  //create cardSet and set name & course
-  const sql = "INSERT INTO card_sets (set_name, course) VALUES (?, ?)" //adds cardSet to database
+  const sql = "INSERT INTO card_sets (set_name, course) VALUES (?, ?)"
   const cardSet = await poolQuery(mysql.format(sql, [req.body.set_name, req.body.course]))
 
-  res.json({
-    msg: `Flashcard set '${req.body.set_name}', with id# '${cardSet.insertId}' successfully created.`,
-  })
-} //if successful, send message
+  const msg = `Flashcard set '${req.body.set_name}', with id# '${cardSet.insertId}' successfully created.`
+
+  res.json({ msg })
+}
 
 //update cardSet
 const updateCardSetById = async (req, res) =>
