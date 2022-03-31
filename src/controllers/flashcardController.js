@@ -31,10 +31,12 @@ const createFlashcard = async (req, res, next) =>
   //create flashcard and set course, title, description, term, definition, front or back image
   (await poolQuery(
     mysql.format(
-      "INSERT INTO flashcards (set_id, term, definition, front_img, back_img) VALUES (?, ?, ?, ?, ?)", //adds flashcard to database
+      "INSERT INTO flashcards (set_id, set_name, set_course, term, definition, front_img, back_img) VALUES (?, ?, ?, ?, ?, ?, ?)", //adds flashcard to database
       [
         //values to replace ?'s above
         req.body.set_id,
+        req.body.name,
+        req.body.course,
         req.body.term,
         req.body.definition,
         req.body.front_img,
@@ -47,10 +49,12 @@ const createFlashcard = async (req, res, next) =>
 const updateFlashcardById = async (req, res) =>
   (await poolQuery(
     mysql.format(
-      "UPDATE flashcards SET set_id = ? term = ?, definition = ?, front_img = ?, back_img = ?  WHERE card_id = ?", //updates flashcard in database
+      "UPDATE flashcards SET set_id = ? set_name = ? set_course = ? term = ?, definition = ?, front_img = ?, back_img = ?  WHERE card_id = ?", //updates flashcard in database
       [
         //values to replace ?'s above
         req.body.set_id,
+        req.body.set_name,
+        req.body.set_course,
         req.body.term,
         req.body.definition,
         req.body.front_img,
