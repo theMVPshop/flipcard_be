@@ -5,7 +5,6 @@ const sendError = (err, res) => {
     message: err.message,
     stack: err.stack,
   })
-  console.log("hey michael", err)
 }
 
 export default (err, req, res, next) => sendError(err, res)
