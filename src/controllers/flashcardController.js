@@ -35,8 +35,8 @@ const createFlashcard = async (req, res, next) =>
       [
         //values to replace ?'s above
         req.body.set_id,
-        req.body.name,
-        req.body.course,
+        req.body.set_name,
+        req.body.set_course,
         req.body.term,
         req.body.definition,
         req.body.front_img,
