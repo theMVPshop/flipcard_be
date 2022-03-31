@@ -35,7 +35,7 @@ const getSetsWithFlashcards = async (req, res) => {
           term: card.term,
           definition: card.definition,
           front_img: card.front_img,
-          back_img: card.back_img
+          back_img: card.back_img,
         })
       }
     })
@@ -45,16 +45,14 @@ const getSetsWithFlashcards = async (req, res) => {
   res.json(results)
 }
 
-
-
 //create cardSet
 const createCardSet = async (req, res, next) => {
   const sql = "INSERT INTO card_sets (set_name, course) VALUES (?, ?)"
   const cardSet = await poolQuery(mysql.format(sql, [req.body.set_name, req.body.course]))
 
-  const msg = `Flashcard set '${req.body.set_name}', with id# '${cardSet.insertId}' successfully created.`
+  const msg = `Flashcard set '${req.body.set_name}' successfully created.`
 
-  res.json({ msg, set_id: cardSet.insertId })
+  res.json({ msg, set_id: cardSet.insertId, set_course: req.body.course })
 }
 
 //update cardSet
@@ -83,5 +81,5 @@ export {
   createCardSet,
   updateCardSetById,
   deleteCardSetById,
-  getSetsWithFlashcards
+  getSetsWithFlashcards,
 }
