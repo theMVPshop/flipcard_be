@@ -27,9 +27,9 @@ const getFlashcardsByCardSet = async (req, res) =>
   )
 
 //create flashcard
-const createFlashcard = async (req, res, next) =>
+const createFlashcard = async (req, res, next) => {
   //create flashcard and set course, title, description, term, definition, front or back image
-  (await poolQuery(
+  let sql = await poolQuery(
     mysql.format(
       "INSERT INTO flashcards (set_id, set_name, set_course, term, definition, front_img, back_img) VALUES (?, ?, ?, ?, ?, ?, ?)", //adds flashcard to database
       [
@@ -43,7 +43,9 @@ const createFlashcard = async (req, res, next) =>
         req.body.back_img,
       ]
     )
-  )) && res.json({ msg: "Flashcard successfully added" }) //if successful, send message
+  )
+  res.json({ msg: "Flashcard successfully added", id: sql.insertId }) //if successful, send message
+}
 
 //update flashcard
 const updateFlashcardById = async (req, res) =>
