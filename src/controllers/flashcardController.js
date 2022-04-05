@@ -51,7 +51,7 @@ const createFlashcard = async (req, res, next) => {
 const updateFlashcardById = async (req, res) =>
   (await poolQuery(
     mysql.format(
-      "UPDATE flashcards SET set_id = ? set_name = ? set_course = ? term = ?, definition = ?, front_img = ?, back_img = ?  WHERE card_id = ?", //updates flashcard in database
+      "UPDATE flashcards SET set_id = ?, set_name = ?, set_course = ?, term = ?, definition = ?, front_img = ?, back_img = ?  WHERE card_id = ?", //updates flashcard in database
       [
         //values to replace ?'s above
         req.body.set_id,
